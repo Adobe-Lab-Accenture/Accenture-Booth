@@ -3,18 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Access and Capture</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <title>Photo Booth</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Header styles */
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            display: flex;
+            justify-content: space between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+        }
+
+        /* Main content styles */
+        #content {
+            background-color: #fff;
+            padding: 40px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #content section {
+            margin: 30px 0;
+        }
+
+        #content h2 {
+            font-size: 24px;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        #content p {
+            font-size: 18px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* "Upload Image" button styles */
+        #upload-button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #upload-button:hover {
+            background-color: #555;
+        }
+
+        /* Gallery styles */
+        #gallery-section {
+            margin-top: 40px;
+        }
+
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .uploaded-photo-frame {
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .uploaded-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+        }
+
+        footer p {
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Camera Access and Capture</h1>
+    <!-- Header Component -->
+    <header>
+        <img id="logo" src="accenture-logo.png" alt="Accenture Logo">
+        <h1>Photo Booth</h1>
+    </header>
 
-    <button id="start-camera">Start Camera</button>
-    <button id="capture-image" disabled>Capture Image</button>
-    <video id="camera-feed" autoplay playsinline></video>
-    <canvas id="image-canvas" style="display: none;"></canvas>
-    <img id="captured-image" style="display: none;">
+    <!-- Photo Booth Content -->
+    <div id="content">
+        <section id="about">
+            <h2>About Photo Booth</h2>
+            <p>Welcome to our photo booth where you can capture and share memorable moments. Our state-of-the-art photo booth offers a fun and interactive experience for all your special events and occasions. Whether it's a wedding, a birthday party, or a corporate gathering, our photo booth is there to add a touch of joy to your moments.</p>
+        </section>
+
+        <section id="why-choose-us">
+            <h2>Why Choose Us?</h2>
+            <ul>
+                <li>High-quality photos with professional equipment</li>
+                <li>Instant prints for your guests</li>
+                <li>Customized photo frame options</li>
+                <li>Easy sharing on social media</li>
+            </ul>
+        </section>
+
+        <!-- Gallery Component -->
+        <section id="gallery-section">
+            <h2>Gallery</h2>
+            <input type="file" id="file-input" accept="image/*">
+            <button id="upload-button">Upload Image</button>
+            <div id="gallery"></div>
+        </section>
+    
+        <!-- Capture Image -->
+
+        <button id="start-camera">Start Camera</button>
+        <button id="capture-image" disabled>Capture Image</button>
+        <video id="camera-feed" autoplay playsinline></video>
+        <canvas id="image-canvas" style="display: none;"></canvas>
+        <img id="captured-image" style="display: none;">
+        <button id="share-email">Share by Email</button>
+    </div>
+
+    
+
+    <!-- Footer Component -->
+    <footer>
+        <p>&copy; 2023 Photo Booth. All rights reserved.</p>
+    </footer>
 
     <script>
+        // JavaScript for image upload and gallery
+        const fileInput = document.getElementById('file-input');
+        const uploadButton = document.getElementById('upload-button');
+        const gallery = document.getElementById('gallery');
+
+        uploadButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const image = new Image();
+                image.src = URL.createObjectURL(file);
+
+                const uploadedPhotoFrame = document.createElement('div');
+                uploadedPhotoFrame.classList.add('uploaded-photo-frame');
+                const uploadedPhoto = document.createElement('img');
+                uploadedPhoto.classList.add('uploaded-photo');
+                uploadedPhoto.src = image.src;
+
+                uploadedPhotoFrame.appendChild(uploadedPhoto);
+                gallery.appendChild(uploadedPhotoFrame);
+            }
+        });
+
         const startCameraButton = document.getElementById('start-camera');
         const captureImageButton = document.getElementById('capture-image');
         const cameraFeed = document.getElementById('camera-feed');
@@ -33,9 +207,8 @@
                         // Handle errors, e.g., permission denied or no camera available
                         console.error('Error accessing the camera:', error);
                     });
-            } 
+            }
         });
-
         captureImageButton.addEventListener('click', () => {
             // Capture a frame from the camera feed
             const context = imageCanvas.getContext('2d');
@@ -47,6 +220,56 @@
             capturedImage.src = imageCanvas.toDataURL('image/jpeg');
             capturedImage.style.display = 'block';
         });
+
+        // Initialize Email.js with your User ID
+        emailjs.init("zgEeteDXTKPCAKP_o");
+
+        document.getElementById("share-email").addEventListener("click", function() {
+            // Prompt the user for their email
+            const userEmail = prompt("Please enter your email address:");
+
+            if (userEmail) {
+                const emailData = {
+                    to_email: userEmail, // User's email
+                    from_name: "Fahad Shafiq", // Your name
+                    message: "Here's the image you requested:"
+                };
+
+                // Rescale the image for optimization
+                const maxWidth = 800; // Adjust this as needed
+                const maxHeight = 600; // Adjust this as needed
+                const quality = 0.7; // Adjust this as needed
+
+                const rescaledCanvas = document.createElement("canvas");
+                const rescaledContext = rescaledCanvas.getContext("2d");
+                rescaledCanvas.width = maxWidth;
+                rescaledCanvas.height = maxHeight;
+
+                rescaledContext.drawImage(capturedImage, 0, 0, maxWidth, maxHeight);
+
+                // Convert the rescaled image to a data URI with the specified quality
+                const optimizedImageData = rescaledCanvas.toDataURL("image/jpeg", quality);
+
+                emailData.attachments = [
+                    {
+                        name: "captured_image.jpg",
+                        data: optimizedImageData
+                    }
+                ];
+
+                // Send the email using the Email.js send method
+                emailjs.send("service_2js4bnf", "template_tywgeak", emailData)
+                    .then(function(response) {
+                        console.log("Email sent successfully:", response);
+                        alert("Email sent successfully.");
+                    })
+                    .catch(function(error) {
+                        console.error("Email sending failed:", error);
+                        alert("Email sending failed. Please try again.");
+                    });
+            }
+        });
+
     </script>
 </body>
 </html>
