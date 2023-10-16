@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Access and Capture</title>
+</head>
+<body>
+    <h1>Camera Access and Capture</h1>
+
+    <button id="start-camera">Start Camera</button>
+    <button id="capture-image" disabled>Capture Image</button>
+    <video id="camera-feed" autoplay playsinline></video>
+    <canvas id="image-canvas" style="display: none;"></canvas>
+    <img id="captured-image" style="display: none;">
+
+    <script>
+        const startCameraButton = document.getElementById('start-camera');
+        const captureImageButton = document.getElementById('capture-image');
+        const cameraFeed = document.getElementById('camera-feed');
+        const imageCanvas = document.getElementById('image-canvas');
+        const capturedImage = document.getElementById('captured-image');
+
+        startCameraButton.addEventListener('click', () => {
+            // Request camera access
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        cameraFeed.srcObject = stream;
+                        captureImageButton.removeAttribute('disabled');
+                    })
+                    .catch(function (error) {
+                        // Handle errors, e.g., permission denied or no camera available
+                        console.error('Error accessing the camera:', error);
+                    });
+            } 
+        });
+
+        captureImageButton.addEventListener('click', () => {
+            // Capture a frame from the camera feed
+            const context = imageCanvas.getContext('2d');
+            imageCanvas.width = cameraFeed.videoWidth;
+            imageCanvas.height = cameraFeed.videoHeight;
+            context.drawImage(cameraFeed, 0, 0, imageCanvas.width, imageCanvas.height);
+
+            // Display the captured image
+            capturedImage.src = imageCanvas.toDataURL('image/jpeg');
+            capturedImage.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
