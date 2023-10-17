@@ -229,14 +229,9 @@
             const userEmail = prompt("Please enter your email address:");
 
             if (userEmail) {
-                const emailData = {
-                    to_email: userEmail, // User's email
-                    from_name: "Fahad Shafiq", // Your name
-                    message: "Here's the image you requested:"
-                };
-
-                // Rescale the image for optimization
-                const maxWidth = 800; // Adjust this as needed
+                
+                                // Rescale the image for optimization
+                                const maxWidth = 800; // Adjust this as needed
                 const maxHeight = 600; // Adjust this as needed
                 const quality = 0.7; // Adjust this as needed
 
@@ -250,13 +245,24 @@
                 // Convert the rescaled image to a data URI with the specified quality
                 const optimizedImageData = rescaledCanvas.toDataURL("image/jpeg", quality);
 
+                
+                
+                const emailData = {
+                    to_email: userEmail, // User's email
+                    from_name: "Fahad Shafiq", // Your name
+                    message: "Here's the image you requested:",
+                    image_url: optimizedImageData
+
+                };
+/*
+
                 emailData.attachments = [
                     {
                         name: "captured_image.jpg",
                         data: optimizedImageData
                     }
                 ];
-
+*/
                 // Send the email using the Email.js send method
                 emailjs.send("service_2js4bnf", "template_tywgeak", emailData)
                     .then(function(response) {
