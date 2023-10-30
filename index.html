@@ -1,282 +1,401 @@
 <!DOCTYPE html>
-<html lang="en">
-    
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    <title>Photo Booth</title>
+    <title>Submit Data to Google Sheets</title>
     <style>
-        /* Reset some default styles */
-        * {
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f2f2;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
-        /* Global styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            text-align: center;
-            line-height: 1.6;
+        body>.py-5 {
+            max-width: unset;
+            padding: 0 !important;
         }
 
-        /* Header styles */
+        .container {
+            padding: 20px;
+        }
+
+        /* Header Styles */
         header {
-            background-color: #333;
-            color: #fff;
-            padding: 20px 0;
+            background-color: #fff;
+            color: #000;
+            padding: 20px 15px;
             display: flex;
-            justify-content: space between;
+            justify-content: space-between;
             align-items: center;
         }
 
-        header h1 {
+        #logo {
+            max-width: 150px;
+        }
+
+        h1 {
             font-size: 36px;
             margin: 0;
         }
 
-        /* Main content styles */
+
+        /* Main Content Styles */
         #content {
-            background-color: #fff;
-            padding: 40px 0;
+            background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, #b455aa 36%, rgba(0, 212, 255, 1) 100%);
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 30px 80px;
+            margin: 20px 0px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        #content section {
-            margin: 30px 0;
+        .section {
+            margin: 30px 0px;
+            text-align: center;
         }
 
-        #content h2 {
-            font-size: 24px;
-            color: #333;
+
+
+        .image-booth {
+            max-width: 500px;
+            max-height: 500px;
+        }
+
+        .about-us {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #fff;
             margin: 20px 0;
         }
 
-        #content p {
+        p {
             font-size: 18px;
-            color: #555;
+            color: #ccc;
             line-height: 1.5;
         }
 
-        /* "Upload Image" button styles */
-        #upload-button {
-            background-color: #333;
+        /* Style for the camera container */
+        .camera-container {
+            display: inline-grid;
+            width: fit-content;
+            background-color: #f2f2f2;
+            /* Background color */
+            border: 1px solid #ccc;
+            /* Border */
+            border-radius: 10px;
+            /* Border radius */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* Box shadow */
+            padding: 20px 40px;
+            /* Add some padding for spacing */
+        }
+
+        .video-hide {
+            display: none;
+        }
+
+        /* Button Styles */
+        .btn {
+            background-color: #004b8d;
             color: #fff;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin: 20px 0px;
+            width: fit-content;
         }
 
-        #upload-button:hover {
-            background-color: #555;
-        }
-
-        /* Gallery styles */
-        #gallery-section {
-            margin-top: 40px;
-        }
-
-        #gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .uploaded-photo-frame {
-            border: 2px solid #333;
-            border-radius: 10px;
-            padding: 10px;
+        /* Updated button styles for better contrast */
+        .btn {
             background-color: #fff;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            /* White background */
+            color: #004b8d;
+            /* Dark blue font color */
+            border: 2px solid #004b8d;
+            /* Dark blue border */
         }
 
-        .uploaded-photo {
-            width: 200px;
-            height: 200px;
-            border-radius: 10px;
+        .btn:hover {
+            background-color: #004b8d;
+            /* Dark blue background on hover */
+            color: #fff;
+            /* White font color on hover */
         }
 
-        /* Footer styles */
+        /* Additional Content Styles */
+        .additional-info {
+            margin-top: 60px;
+        }
+
+        .additional-info h2 {
+            font-size: 28px;
+            color: #fff;
+            margin: 20px 0;
+        }
+
+        .additional-info p {
+            font-size: 18px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        /* Footer Styles */
         footer {
-            background-color: #333;
+            background-color: #be82ff;
             color: #fff;
             padding: 20px 0;
+            text-align: center;
         }
 
         footer p {
             font-size: 16px;
+            margin: 0;
+            color: #fff;
+        }
+
+        /* Fixed Camera Stream and Captured Image Styling */
+        #camera-feed {
+            max-width: 700px;
+            max-height: 700px;
+        }
+
+        #captured-image {
+            max-width: 700px;
+            max-height: 700px;
+            display: none;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        .video-icon {
+            width: 375px;
+            max-height: 375px;
+            padding: 40px;
+            background-color: #e6dcff;
+        }
+
+        /* Improved List Styling */
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            text-align: left;
+            margin-left: 20%;
+        }
+
+        li {
+            list-style-type: none;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        /* Style for the user details modal */
+        #userDetailsModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            width: 70%;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Style for form elements within the modal */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 10px 0;
+            text-align: left;
+            width: 100%;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type="submit"] {
+            background-color: #004b8d;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #00396d;
+        }
+
+        /* Form styles below */
+
+        form {
+            max-width: 550px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 50px 60px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        input[type="submit"] {
+            width: 80%;
+            padding: 15px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        select {
+            width: 30%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #fff;
+        }
+
+        select:focus {
+            border-color: #007bff;
+        }
+
+        select option {
+            padding: 5px;
+        }
+
+        .title {
+            width: 100%;
+            text-align: left;
+        }
+        .form-heading{
+            color: #000;
+            margin-bottom: 30px;
         }
     </style>
 </head>
+
 <body>
+    <script type="text/javascript">var submitted = false;</script>
     <!-- Header Component -->
     <header>
-        <img id="logo" src="accenture-logo.png" alt="Accenture Logo">
-        <h1>Photo Booth</h1>
+        <img id="logo" src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Accenture_logo.svg"
+            alt="Accenture Logo" />
+        <h1>Accenture AI Photo Booth</h1>
     </header>
+
 
     <!-- Photo Booth Content -->
     <div id="content">
-        <section id="about">
-            <h2>About Photo Booth</h2>
-            <p>Welcome to our photo booth where you can capture and share memorable moments. Our state-of-the-art photo booth offers a fun and interactive experience for all your special events and occasions. Whether it's a wedding, a birthday party, or a corporate gathering, our photo booth is there to add a touch of joy to your moments.</p>
+        <section class="section" id="about">
+            <img class="image-booth"
+                src="https://ai-photo-booths-website.sfo2.cdn.digitaloceanspaces.com/website-assets/images/AI%20Photo%20Booths%20Logo.png" />
+            <div class="about-us">
+                <h2>Welcome to the Accenture AI Photo Booth</h2>
+                <p>Step into the future of photography with our AI Photo Booth at Adobe Experience Maker. Explore
+                    creative possibilities, instantly transform backgrounds, and capture unforgettable memories with a
+                    touch of AI magic. Elevate your experience and leave with standout photos that you'll love.</p>
+            </div>
         </section>
 
-        <section id="why-choose-us">
-            <h2>Why Choose Us?</h2>
-            <ul>
-                <li>High-quality photos with professional equipment</li>
-                <li>Instant prints for your guests</li>
-                <li>Customized photo frame options</li>
-                <li>Easy sharing on social media</li>
-            </ul>
+        <section>
+            <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"
+                onload="if(submitted)  {window.location='https://adobe-lab-accenture.github.io/Accenture-Booth/';}"></iframe>
+            <form id="submit-form"
+                action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdxzWYAEHDD0HCcOAZidlfBvE1-Jfn5v1gDomrwLLzpoFe_Zw/formResponse"
+                method="Post" onsubmit="submitted=!0" target="hidden_iframe">
+                <h2 class="form-heading">Please register your response</h2>
+                <label for="title">Title*</label>
+                <div class="title">
+                    <select name="entry.1174665569" required>
+                        <option value="">Select a title</option>
+                        <option value="Mr">Mr</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="Ms">Ms</option>
+                        <option value="Miss">Miss</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <label>Full Name*</label>
+                <input type="text" name="entry.648560916" placeholder="Full Name" required>
+                <label>Organization*</label>
+                <input type="text" name="entry.1851415518" placeholder="Organization" required>
+                <label>Email*</label>
+                <input type="text" name="entry.1193286841" placeholder="Email" required>
+                <label>Phone</label>
+                <input type="text" name="entry.1203715144" placeholder="Phone">
+                <label>Your answer*</label>
+                <input type="text" name="entry.1297402032" placeholder="Your answer" required>
+                <input type="submit" id="submit" value="Submit">
+            </form>
         </section>
 
-        <!-- Gallery Component -->
-        <section id="gallery-section">
-            <h2>Gallery</h2>
-            <input type="file" id="file-input" accept="image/*">
-            <button id="upload-button">Upload Image</button>
-            <div id="gallery"></div>
-        </section>
-    
-        <!-- Capture Image -->
-
-        <button id="start-camera">Start Camera</button>
-        <button id="capture-image" disabled>Capture Image</button>
-        <video id="camera-feed" autoplay playsinline></video>
-        <canvas id="image-canvas" style="display: none;"></canvas>
-        <img id="captured-image" style="display: none;">
-        <button id="share-email">Share by Email</button>
+        <div class="additional-info section">
+            <h2>Learn more about AI</h2>
+            <p>Interested in learning more about AI? Talk to our experts in the booth who can answer your questions and
+                provide insights on how AI is shaping our future.</p>
+        </div>
     </div>
 
-    
+
+
 
     <!-- Footer Component -->
     <footer>
-        <p>&copy; 2023 Photo Booth. All rights reserved.</p>
+        <p>&copy; 2023 Accenture AI Photo Booth. All rights reserved.</p>
     </footer>
 
-    <script>
-        // JavaScript for image upload and gallery
-        const fileInput = document.getElementById('file-input');
-        const uploadButton = document.getElementById('upload-button');
-        const gallery = document.getElementById('gallery');
-
-        uploadButton.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const image = new Image();
-                image.src = URL.createObjectURL(file);
-
-                const uploadedPhotoFrame = document.createElement('div');
-                uploadedPhotoFrame.classList.add('uploaded-photo-frame');
-                const uploadedPhoto = document.createElement('img');
-                uploadedPhoto.classList.add('uploaded-photo');
-                uploadedPhoto.src = image.src;
-
-                uploadedPhotoFrame.appendChild(uploadedPhoto);
-                gallery.appendChild(uploadedPhotoFrame);
-            }
-        });
-
-        const startCameraButton = document.getElementById('start-camera');
-        const captureImageButton = document.getElementById('capture-image');
-        const cameraFeed = document.getElementById('camera-feed');
-        const imageCanvas = document.getElementById('image-canvas');
-        const capturedImage = document.getElementById('captured-image');
-
-        startCameraButton.addEventListener('click', () => {
-            // Request camera access
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function (stream) {
-                        cameraFeed.srcObject = stream;
-                        captureImageButton.removeAttribute('disabled');
-                    })
-                    .catch(function (error) {
-                        // Handle errors, e.g., permission denied or no camera available
-                        console.error('Error accessing the camera:', error);
-                    });
-            }
-        });
-        captureImageButton.addEventListener('click', () => {
-            // Capture a frame from the camera feed
-            const context = imageCanvas.getContext('2d');
-            imageCanvas.width = cameraFeed.videoWidth;
-            imageCanvas.height = cameraFeed.videoHeight;
-            context.drawImage(cameraFeed, 0, 0, imageCanvas.width, imageCanvas.height);
-
-            // Display the captured image
-            capturedImage.src = imageCanvas.toDataURL('image/jpeg');
-            capturedImage.style.display = 'block';
-        });
-
-        // Initialize Email.js with your User ID
-        emailjs.init("zgEeteDXTKPCAKP_o");
-
-        document.getElementById("share-email").addEventListener("click", function() {
-            // Prompt the user for their email
-            const userEmail = prompt("Please enter your email address:");
-
-            if (userEmail) {
-                
-                                // Rescale the image for optimization
-                                const maxWidth = 800; // Adjust this as needed
-                const maxHeight = 600; // Adjust this as needed
-                const quality = 0.7; // Adjust this as needed
-
-                const rescaledCanvas = document.createElement("canvas");
-                const rescaledContext = rescaledCanvas.getContext("2d");
-                rescaledCanvas.width = maxWidth;
-                rescaledCanvas.height = maxHeight;
-
-                rescaledContext.drawImage(capturedImage, 0, 0, maxWidth, maxHeight);
-
-                // Convert the rescaled image to a data URI with the specified quality
-                const optimizedImageData = rescaledCanvas.toDataURL("image/jpeg", quality);
-
-                
-                
-                const emailData = {
-                    to_email: userEmail, // User's email
-                    from_name: "Fahad Shafiq", // Your name
-                    message: "Here's the image you requested:",
-                    image_url: optimizedImageData
-
-                };
-/*
-
-                emailData.attachments = [
-                    {
-                        name: "captured_image.jpg",
-                        data: optimizedImageData
-                    }
-                ];
-*/
-                // Send the email using the Email.js send method
-                emailjs.send("service_2js4bnf", "template_tywgeak", emailData)
-                    .then(function(response) {
-                        console.log("Email sent successfully:", response);
-                        alert("Email sent successfully.");
-                    })
-                    .catch(function(error) {
-                        console.error("Email sending failed:", error);
-                        alert("Email sending failed. Please try again.");
-                    });
-            }
-        });
-
-    </script>
 </body>
-</html>
+
+</html> 
